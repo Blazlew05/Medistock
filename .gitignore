@@ -1,0 +1,37 @@
+# Entornos virtuales y paquetes
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/node_modules/
+**/.next/
+**/.turbo/
+
+# Variables de entorno (NUNCA commitear)
+**/.env
+**/.env.local
+**/.env.production
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Build outputs
+**/dist/
+**/build/
+**/.cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# DB local
+*.db
+*.sqlite
+
+# Claves AWS (NUNCA commitear)
+*.pem

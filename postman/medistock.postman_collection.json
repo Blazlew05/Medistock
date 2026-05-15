@@ -1,0 +1,374 @@
+{
+  "info": {
+    "name": "MEDISTOCK API",
+    "description": "Coleccion completa de endpoints de MEDISTOCK. Configura la variable base_url (por defecto http://localhost:8000) y ejecuta primero el request 'Login admin' para obtener el token, que queda guardado automaticamente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Salud",
+      "item": [
+        {
+          "name": "Health",
+          "request": { "method": "GET", "url": "{{base_url}}/health" }
+        },
+        {
+          "name": "Root",
+          "request": { "method": "GET", "url": "{{base_url}}/" }
+        }
+      ]
+    },
+    {
+      "name": "Autenticacion",
+      "item": [
+        {
+          "name": "Login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.access_token) {",
+                  "  pm.collectionVariables.set('token', data.access_token);",
+                  "  console.log('Token guardado');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@medistock.cl\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.access_token) pm.collectionVariables.set('token', data.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"paciente@gmail.com\",\n  \"password\": \"paciente123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login institucion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.access_token) pm.collectionVariables.set('token', data.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"compras@clinicalasandes.cl\",\n  \"password\": \"clinica123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Registro paciente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/v1/auth/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@gmail.com\",\n  \"password\": \"test123\",\n  \"nombre\": \"Usuario Test\",\n  \"rol\": \"cliente_paciente\",\n  \"rut\": \"11.111.111-1\",\n  \"telefono\": \"+56912345678\",\n  \"direccion\": \"Calle 123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Perfil actual",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/auth/yo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos (Publico/ERP)",
+      "item": [
+        {
+          "name": "Listar productos",
+          "request": { "method": "GET", "url": "{{base_url}}/api/v1/productos" }
+        },
+        {
+          "name": "Filtrar por categoria",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/productos?categoria=Equipamiento"
+          }
+        },
+        {
+          "name": "Listar categorias",
+          "request": { "method": "GET", "url": "{{base_url}}/api/v1/productos/categorias" }
+        },
+        {
+          "name": "Producto por codigo",
+          "request": { "method": "GET", "url": "{{base_url}}/api/v1/productos/MED-JER-001" }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Productos",
+      "item": [
+        {
+          "name": "Listar todos (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/admin/productos"
+          }
+        },
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/v1/admin/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"MED-NUEVO-001\",\n  \"nombre\": \"Producto de prueba\",\n  \"descripcion\": \"Descripcion\",\n  \"categoria\": \"Material Descartable\",\n  \"precio\": 1990,\n  \"unidad\": \"unidad\",\n  \"requiere_receta\": false,\n  \"es_critico\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Actualizar producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/v1/admin/productos/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio\": 2500\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ejecutivo",
+      "item": [
+        {
+          "name": "Stock multi-bodega",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/ejecutivo/productos/1/stock"
+          }
+        },
+        {
+          "name": "Ordenes pendientes aprobacion",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/ejecutivo/ordenes/pendientes"
+          }
+        },
+        {
+          "name": "Aprobar orden",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/ejecutivo/ordenes/1/aprobar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cliente - Ordenes",
+      "item": [
+        {
+          "name": "Crear orden",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/v1/ordenes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"producto_id\": 1, \"cantidad\": 5 },\n    { \"producto_id\": 3, \"cantidad\": 2 }\n  ],\n  \"tipo_despacho\": \"normal\",\n  \"urgencia\": \"media\",\n  \"direccion_envio\": \"Av. Providencia 1234, Providencia\",\n  \"notas\": \"Entregar en oficina\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Mis ordenes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/ordenes/mis"
+          }
+        },
+        {
+          "name": "Detalle de orden",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/ordenes/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Operador logistico",
+      "item": [
+        {
+          "name": "Ordenes priorizadas",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/operador/ordenes/priorizadas"
+          }
+        },
+        {
+          "name": "Marcar en preparacion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/operador/ordenes/1/preparar"
+          }
+        },
+        {
+          "name": "Despachar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/operador/ordenes/1/despachar"
+          }
+        },
+        {
+          "name": "Entregar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/operador/ordenes/1/entregar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pagos (MercadoPago)",
+      "item": [
+        {
+          "name": "Iniciar pago",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/pagos/iniciar/1"
+          }
+        },
+        {
+          "name": "Webhook MercadoPago",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/v1/pagos/webhook?topic=payment&id=12345",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"payment\",\n  \"data\": { \"id\": \"12345\" }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analista finanzas",
+      "item": [
+        {
+          "name": "Listar pagos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/analista/pagos"
+          }
+        },
+        {
+          "name": "Auditar pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/v1/analista/pagos/1/auditar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"aprobado\",\n  \"nota\": \"Validado contra extracto bancario\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Reportes",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/admin/dashboard"
+          }
+        },
+        {
+          "name": "Bodegas",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/admin/bodegas"
+          }
+        },
+        {
+          "name": "Todas las ordenes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/v1/admin/ordenes"
+          }
+        }
+      ]
+    }
+  ]
+}

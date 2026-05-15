@@ -1,0 +1,17 @@
+[Unit]
+Description=Farmacia Cruz Amarilla (consumidor externo de la API MEDISTOCK)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory={{PROJECT_DIR}}/consumidor-externo
+Environment=NODE_ENV=production
+Environment=PORT=3001
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
