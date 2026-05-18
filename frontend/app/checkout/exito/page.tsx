@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Clock, Package } from "lucide-react";
 
 export default function CheckoutExitoPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12 text-slate-500">Cargando...</div>}>
+      <ExitoContenido />
+    </Suspense>
+  );
+}
+
+function ExitoContenido() {
   const params = useSearchParams();
   const orden = params.get("orden");
   const pendiente = params.get("pendiente") === "1";

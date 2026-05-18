@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, Clock, DollarSign } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, type Pago, type EstadoPago } from "@/lib/api";
 
 const ETIQUETAS: Record<EstadoPago, { label: string; color: string; icon: any }> = {

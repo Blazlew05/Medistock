@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Package, Truck, CheckCircle2, AlertTriangle } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, type Orden } from "@/lib/api";
 
 export default function OperadorPage() {

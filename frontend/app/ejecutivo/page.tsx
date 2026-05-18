@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, Building2, Search, Warehouse } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, type Orden, type ProductoConStock } from "@/lib/api";
 
 export default function EjecutivoPage() {

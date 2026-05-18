@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Package, Users, ShoppingBag, Clock, CheckCircle2, Truck, DollarSign, Plus, Edit2 } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, type Orden, type ProductoAdmin } from "@/lib/api";
 
 interface Dashboard {

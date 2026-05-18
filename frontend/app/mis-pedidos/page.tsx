@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, type Orden, type EstadoOrden } from "@/lib/api";
 
 const ETIQUETAS: Record<EstadoOrden, { label: string; color: string; icon: any }> = {

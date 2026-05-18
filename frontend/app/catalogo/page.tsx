@@ -1,13 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, ShoppingCart, Package, AlertCircle } from "lucide-react";
 import { api, formatCLP, type Producto } from "@/lib/api";
 import { carrito } from "@/lib/carrito";
 
 export default function CatalogoPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12 text-slate-500">Cargando catálogo...</div>}>
+      <CatalogoContenido />
+    </Suspense>
+  );
+}
+
+function CatalogoContenido() {
   const params = useSearchParams();
   const categoriaInicial = params.get("categoria") || "";
 

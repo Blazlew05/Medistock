@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Truck, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react";
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/componentes/AuthGuard";
 import { api, formatCLP, getAuth, type Orden, type Usuario, type TipoDespacho, type Urgencia } from "@/lib/api";
 import { carrito } from "@/lib/carrito";
 
