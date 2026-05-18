@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Package, AlertCircle, Search } from "lucide-react";
 
@@ -21,6 +21,14 @@ const CLP = (n: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(n);
 
 export default function CatalogoPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12 text-amarilla-700">Cargando catálogo...</div>}>
+      <CatalogoContenido />
+    </Suspense>
+  );
+}
+
+function CatalogoContenido() {
   const params = useSearchParams();
   const catInicial = params.get("categoria") || "";
 
