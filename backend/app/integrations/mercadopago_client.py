@@ -1,71 +1,77 @@
-"""Integracion con MercadoPago Chile (sandbox).
+"""Integracion con Transbank Webpay Plus Chile (Mall/Normal Sandbox).
 
-Documentacion: https://www.mercadopago.cl/developers/es/docs/checkout-pro
+Documentacion: https://www.transbankdevelopers.cl/
 """
-import mercadopago
+from transbank.webpay.webpay_plus.transaction import Transaction
+from transbank.common.integration_type import IntegrationType
 
-from app.core.config import settings
+from backend.app.core.config import settings
 
 
-class MercadoPagoClient:
-    """Cliente que encapsula la SDK oficial de MercadoPago."""
+class WebpayClient:
+    """Cliente que encapsula la SDK oficial de Transbank Webpay Plus."""
 
     def __init__(self):
-        if not settings.MERCADOPAGO_ACCESS_TOKEN:
-            self.sdk = None
+        # Transbank usa por defecto su entorno de INTEGRACIÓN (Sandbox) si no se configuran credenciales.
+        # En producción se debe usar settings.WEBPAY_COMMERCE_CODE y settings.WEBPAY_API_KEY.
+        if not getattr(settings, "WEBPAY_API_KEY", None):
+            self.tx = Transaction()  # Carga credenciales demo automáticamente
         else:
-            self.sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+            # Configuración para producción en AWS
+            self.tx = Transaction().configure_for_production(
+                commerce_code=settings.WEBPAY_COMMERCE_CODE,
+                api_key=settings.WEBPAY_API_KEY
+            )
 
-    def crear_preferencia(
+    def crear_transaccion(
         self,
         orden_numero: str,
-        descripcion: str,
         monto: float,
-        comprador_email: str,
+        session_id: str = "session_medistock",
     ) -> dict:
-        """Crea una preferencia de pago en MercadoPago.
-
-        Retorna un dict con preference_id, init_point y sandbox_init_point.
+        """Inicia una transacción en Webpay Plus.
+        
+        Retorna el 'token' y la 'url' a la que el frontend debe redirigir al usuario.
         """
-        if not self.sdk:
-            # Modo desarrollo sin credenciales: respuesta simulada
+        # URLs de retorno a tu API de FastAPI para capturar el resultado
+        return_url = f"{settings.BACKEND_URL}/api/v1/pagos/webpay-callback"
+
+        if getattr(settings, "MOCK_PAGOS", True) and not getattr(settings, "WEBPAY_API_KEY", None):
+            # Modo desarrollo/simulado opcional
             return {
-                "id": f"FAKE-PREF-{orden_numero}",
-                "init_point": f"{settings.FRONTEND_URL}/checkout/mock?orden={orden_numero}",
-                "sandbox_init_point": f"{settings.FRONTEND_URL}/checkout/mock?orden={orden_numero}",
+                "token": f"FAKE-TOKEN-{orden_number}",
+                "url": f"{settings.FRONTEND_URL}/checkout/mock?orden={orden_numero}"
             }
 
-        preference_data = {
-            "items": [
-                {
-                    "title": descripcion,
-                    "quantity": 1,
-                    "unit_price": float(monto),
-                    "currency_id": "CLP",
-                }
-            ],
-            "payer": {"email": comprador_email},
-            "external_reference": orden_numero,
-            "back_urls": {
-                "success": f"{settings.FRONTEND_URL}/checkout/exito?orden={orden_numero}",
-                "failure": f"{settings.FRONTEND_URL}/checkout/error?orden={orden_numero}",
-                "pending": f"{settings.FRONTEND_URL}/checkout/pendiente?orden={orden_numero}",
-            },
-            "auto_return": "approved",
-            "notification_url": f"{settings.BACKEND_URL}/api/v1/pagos/webhook",
-        }
+        try:
+            # Los montos en CLP para Webpay deben ser enteros obligatoriamente
+            monto_int = int(monto)
 
-        result = self.sdk.preference().create(preference_data)
-        if result["status"] not in (200, 201):
-            raise RuntimeError(f"Error MercadoPago: {result}")
-        return result["response"]
+            response = self.tx.create(
+                buy_order=orden_numero,
+                session_id=session_id,
+                amount=monto_int,
+                return_url=return_url
+            )
+            
+            return {
+                "token": response['token'],
+                "url": response['url']
+            }
+        except Exception as e:
+            raise RuntimeError(f"Error al inicializar Webpay Plus: {str(e)}")
 
-    def consultar_pago(self, payment_id: str) -> dict:
-        """Consulta el estado de un pago en MercadoPago."""
-        if not self.sdk:
-            return {"status": "approved", "id": payment_id, "payment_method_id": "visa"}
-        result = self.sdk.payment().get(payment_id)
-        return result["response"]
+    def confirmar_transaccion(self, token: str) -> dict:
+        """Confirma el pago (Commit) ante Transbank usando el token recibido en el callback."""
+        if "FAKE-TOKEN" in token:
+            return {"status": "AUTHORIZED", "buy_order": token.split("-")[-1], "amount": 1000}
+
+        try:
+            # Este paso es OBLIGATORIO en Webpay para capturar el dinero
+            response = self.tx.commit(token=token)
+            return response
+        except Exception as e:
+            raise RuntimeError(f"Error al confirmar la transacción en Webpay: {str(e)}")
 
 
-mp_client = MercadoPagoClient()
+webpay_client = WebpayClient()
