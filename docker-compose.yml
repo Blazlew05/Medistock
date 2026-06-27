@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  backend_django:
+    build: ./backend_django
+    container_name: medistock_django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend_django:/app
+    ports:
+      - "8000:8000"
+
+  frontend_vite:
+    build: ./frontend_vite
+    container_name: medistock_react
+    command: npm run dev
+    volumes:
+      - ./frontend_vite:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend_django

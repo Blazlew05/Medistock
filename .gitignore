@@ -35,3 +35,14 @@ npm-debug.log*
 
 # Claves AWS (NUNCA commitear)
 *.pem
+
+# Node / React
+node_modules/
+dist/
+.env
+
+# Python / Django
+__pycache__/
+*.pyc
+.venv/
+db.sqlite3
