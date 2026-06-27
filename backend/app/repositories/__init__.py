@@ -4,8 +4,8 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.core.enums import EstadoOrden, RolUsuario
-from app.models import (
+from backend.app.core.enums import EstadoOrden, RolUsuario
+from backend.app.models import (
     Bodega,
     ItemOrden,
     Orden,

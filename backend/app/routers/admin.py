@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from app.core.enums import EstadoOrden, EstadoPago, RolUsuario
-from app.models import Orden, Pago, Producto, Usuario
-from app.routers.deps import DbSession, requiere_roles
-from app.schemas import BodegaRead
-from app.repositories import BodegaRepository
+from backend.app.core.enums import EstadoOrden, EstadoPago, RolUsuario
+from backend.app.models import Orden, Pago, Producto, Usuario
+from backend.app.routers.deps import DbSession, requiere_roles
+from backend.app.schemas import BodegaRead
+from backend.app.repositories import BodegaRepository
 
 router = APIRouter(prefix="/api/v1/admin", tags=["Admin"])
 

@@ -1,10 +1,10 @@
 """Router de ordenes (compras)."""
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.enums import EstadoOrden, RolUsuario
-from app.routers.deps import DbSession, UsuarioAutenticado, requiere_roles
-from app.schemas import OrdenCreate, OrdenListItem, OrdenRead
-from app.services import OrdenService
+from backend.app.core.enums import EstadoOrden, RolUsuario
+from backend.app.routers.deps import DbSession, UsuarioAutenticado, requiere_roles
+from backend.app.schemas import OrdenCreate, OrdenListItem, OrdenRead
+from backend.app.services import OrdenService
 
 router = APIRouter(prefix="/api/v1/ordenes", tags=["Ordenes"])
 

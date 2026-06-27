@@ -30,74 +30,75 @@ Plataforma full-stack para la distribuidora MEDISTOCK. Proyecto académico de
    └─────────┘  └─────────────┘ └──────────┘
 ```
 
-### Integraciones (3 sistemas)
-
-1. **API REST propia de MEDISTOCK** — productor (Python + FastAPI + PostgreSQL).
-2. **MercadoPago Chile** — consumidor (pasarela de pagos sandbox).
-3. **Sitio "Farmacia Cruz Amarilla"** — consumidor de la API propia (simula un ERP externo / farmacia asociada que consulta catálogo y precios en tiempo real).
-
----
-
-## Stack
-
-| Capa | Tecnología |
-|------|------------|
-| Backend | Python 3.10+, FastAPI, SQLAlchemy, Alembic, JWT |
-| BD | PostgreSQL 14+ |
-| Frontend | Next.js 14, TypeScript, Tailwind CSS |
-| Pagos | MercadoPago Chile (sandbox) |
-| Deploy | AWS EC2 t2.micro, Nginx, systemd |
+## Integraciones (3 Sistemas Conectados)
+1. **API REST Propia de MEDISTOCK (Productor):** Construida en Python con FastAPI y PostgreSQL como motor de persistencia.
+2. **MercadoPago Chile (Consumidor Pasarela):** Integración nativa de checkout para transacciones en ambiente Sandbox.
+3. **Sitio "Farmacia Cruz Amarilla" (Consumidor ERP):** Aplicación secundaria que simula un ERP externo o farmacia asociada que consulta stock, catálogo y precios en tiempo real mediante endpoints públicos.
 
 ---
 
-## Estructura del repo
+Stack Tecnológico
 
-```
+| Capa | Tecnologías | Contenedor Docker | Puertos |
+| :--- | :--- | :--- | :--- |
+| **Base de Datos** | PostgreSQL 14+ | `medistock_db` | `5432:5432` |
+| **Backend** | Python 3.11, FastAPI, SQLAlchemy, Alembic, JWT | `medistock_api` | `8000:8000` |
+| **Frontend Principal** | Next.js 14 (App Router), TS, Tailwind CSS | `medistock_main_web` | `3000:3000` |
+| **Consumidor Externo** | Next.js 14, TypeScript (Cruz Amarilla) | `medistock_cruz_amarilla` | `3001:3001` |
+| **Orquestación** | Docker & Docker Compose | - | - |
+| **Despliegue / Cloud** | AWS EC2 (t2.micro), Nginx, Systemd, Ubuntu 22.04 | - | - |
+
+---
+
+Estructura del Repositorio
+
+```text
 medistock/
-├── backend/           # API FastAPI
+├── docker-compose.yml        # Orquestación de todo el ecosistema multi-contenedor
+├── backend/                  # API FastAPI (Productor)
 │   ├── app/
-│   │   ├── core/         # config, security, database, enums
-│   │   ├── models/       # SQLAlchemy models
-│   │   ├── schemas/      # Pydantic schemas
-│   │   ├── repositories/ # Acceso a BD
-│   │   ├── services/     # Logica de negocio
-│   │   ├── routers/      # Endpoints
-│   │   └── integrations/ # MercadoPago client
-│   ├── seed.py
-│   └── requirements.txt
-├── frontend/          # Sitio principal Next.js
-│   ├── app/              # Pages (App Router)
-│   ├── components/
-│   └── lib/
-├── consumidor-externo/  # Sitio Cruz Amarilla (consume la API)
-├── deploy/            # Scripts y configs de deploy
-│   ├── setup.sh
-│   ├── nginx.conf
-│   └── systemd/
-├── docs/              # Documentación
-├── postman/           # Coleccion Postman
-└── README.md
-```
+│   │   ├── core/             # Configuración, seguridad, conexión a BD y Enums
+│   │   ├── models/           # Modelos ORM (SQLAlchemy)
+│   │   ├── schemas/          # Esquemas de validación de datos (Pydantic)
+│   │   ├── routers/          # Controladores y Endpoints de la API
+│   │   └── integrations/     # Cliente SDK de MercadoPago
+│   ├── seed.py               # Script de inicialización de datos demo
+│   ├── requirements.txt      # Dependencias del Backend Python
+│   └── Dockerfile            # Configuración de imagen para el Backend
+├── frontend/                 # Aplicación Principal Next.js 14
+│   ├── app/                  # Módulos y ruteo (App Router)
+│   ├── components/           # Componentes UI reutilizables
+│   └── lib/                  # Clientes de API y utilidades
+├── consumidor-externo/       # Portal "Farmacia Cruz Amarilla" (Cliente B2B)
+├── deploy/                   # Automatización y scripts de despliegue productivo
+│   ├── setup.sh              # Script de aprovisionamiento en AWS
+│   └── nginx.conf            # Configuración del proxy inverso Nginx
+├── docs/                     # Guías detalladas de configuración externa
+└── postman/                  # Colecciones de prueba de endpoints (Postman)
 
----
+--
 
-## Desarrollo local
+## Desarrollo Local (Ecosistema Docker Unificado)
 
-### 1. Backend
+### 1. Configurar Variables de Entorno
+Antes de encender los servicios, asegúrese de copiar las plantillas de configuración `.env.example` a sus archivos reales en cada carpeta y rellenar las credenciales de MercadoPago en el backend:
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate   # Linux/Mac
-# .\venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-cp .env.example .env
-# Edita .env y configura DATABASE_URL y credenciales MercadoPago
+# Configurar entorno del Backend
+cp backend/.env.example backend/.env
+
+# Configurar entornos de los Frontends
+cp frontend/.env.example frontend/.env.local
+cp consumidor-externo/.env.example consumidor-externo/.env.local
 
 python seed.py             # crea tablas + datos demo
 uvicorn app.main:app --reload
 ```
-
+### Integraciones (4 sistemas en total)
+1. **API REST propia de MEDISTOCK** — productor (Python + FastAPI + PostgreSQL).
+2. **MercadoPago Chile** — consumidor (pasarela de pagos sandbox principal).
+3. **Transbank Webpay Plus** — consumidor (pasarela de pagos sandbox secundaria integrada para redundancia).
+4. **Sitio "Farmacia Cruz Amarilla"** — consumidor de la API propia (simula un ERP externo).
 Backend disponible en **http://localhost:8000** ·
 Swagger UI: **http://localhost:8000/docs**
 
@@ -109,6 +110,13 @@ cp .env.example .env.local
 npm install
 npm run dev
 ```
+### Levantar el Ecosistema Completo
+
+docker compose up -d --build
+
+### Población Inicial de Datos (Seed)
+
+docker compose exec backend python seed.py
 
 Disponible en **http://localhost:3000**
 

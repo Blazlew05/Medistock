@@ -1,10 +1,10 @@
 """Router de pagos: iniciar pago en MercadoPago, webhook, auditoria."""
 from fastapi import APIRouter, Depends, Query, Request
 
-from app.core.enums import EstadoPago, RolUsuario
-from app.routers.deps import DbSession, UsuarioAutenticado, requiere_roles
-from app.schemas import AuditoriaPago, IniciarPagoResponse, PagoRead
-from app.services import PagoService
+from backend.app.core.enums import EstadoPago, RolUsuario
+from backend.app.routers.deps import DbSession, UsuarioAutenticado, requiere_roles
+from backend.app.schemas import AuditoriaPago, IniciarPagoResponse, PagoRead
+from backend.app.services import PagoService
 
 router = APIRouter(prefix="/api/v1/pagos", tags=["Pagos"])
 

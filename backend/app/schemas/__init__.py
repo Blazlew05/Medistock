@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.core.enums import (
+from backend.app.core.enums import (
     EstadoOrden,
     EstadoPago,
     RolUsuario,

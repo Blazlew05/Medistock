@@ -7,9 +7,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.enums import RolUsuario
-from app.routers.deps import DbSession, requiere_roles
-from app.schemas import (
+from backend.app.core.enums import RolUsuario
+from backend.app.routers.deps import DbSession, requiere_roles
+from backend.app.schemas import (
     ProductoConStockDetalle,
     ProductoCreate,
     ProductoPublico,
@@ -17,7 +17,7 @@ from app.schemas import (
     ProductoUpdate,
     StockPorBodega,
 )
-from app.services import ProductoService
+from backend.app.services import ProductoService
 
 # Router publico (sin autenticacion) - lo consumen ERPs
 public_router = APIRouter(prefix="/api/v1/productos", tags=["Productos (Publico/ERP)"])

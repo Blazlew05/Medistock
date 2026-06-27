@@ -14,8 +14,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base
-from app.core.enums import (
+from backend.app.core.database import Base
+from backend.app.core.enums import (
     EstadoOrden,
     EstadoPago,
     RolUsuario,

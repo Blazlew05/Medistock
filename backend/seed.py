@@ -5,10 +5,10 @@ Uso:
 """
 from decimal import Decimal
 
-from app.core.database import Base, SessionLocal, engine
-from app.core.enums import RolUsuario
-from app.core.security import hash_password
-from app.models import Bodega, Producto, StockBodega, Usuario
+from backend.app.core.database import Base, SessionLocal, engine
+from backend.app.core.enums import RolUsuario
+from backend.app.core.security import hash_password
+from backend.app.models import Bodega, Producto, StockBodega, Usuario
 
 
 def crear_tablas():

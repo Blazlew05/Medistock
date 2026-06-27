@@ -1,10 +1,10 @@
 """Router de autenticacion."""
 from fastapi import APIRouter, status
 
-from app.core.security import create_access_token
-from app.routers.deps import DbSession, UsuarioAutenticado
-from app.schemas import TokenResponse, UsuarioCreate, UsuarioLogin, UsuarioRead
-from app.services import AuthService
+from backend.app.core.security import create_access_token
+from backend.app.routers.deps import DbSession, UsuarioAutenticado
+from backend.app.schemas import TokenResponse, UsuarioCreate, UsuarioLogin, UsuarioRead
+from backend.app.services import AuthService
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Autenticacion"])
 

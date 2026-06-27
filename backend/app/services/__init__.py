@@ -6,24 +6,24 @@ from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.enums import EstadoOrden, EstadoPago, RolUsuario, TipoDespacho
-from app.core.security import hash_password, verify_password
-from app.integrations.mercadopago_client import mp_client
-from app.models import (
+from backend.app.core.enums import EstadoOrden, EstadoPago, RolUsuario, TipoDespacho
+from backend.app.core.security import hash_password, verify_password
+from backend.app.integrations.mercadopago_client import mp_client
+from backend.app.models import (
     ItemOrden,
     Orden,
     Pago,
     Producto,
     Usuario,
 )
-from app.repositories import (
+from backend.app.repositories import (
     BodegaRepository,
     OrdenRepository,
     PagoRepository,
     ProductoRepository,
     UsuarioRepository,
 )
-from app.schemas import (
+from backend.app.schemas import (
     OrdenCreate,
     ProductoCreate,
     ProductoUpdate,

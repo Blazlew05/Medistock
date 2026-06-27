@@ -1,9 +1,11 @@
 """Aplicacion FastAPI principal de MEDISTOCK."""
+from backend.app.routers import admin, auth, ordenes
+from backend.app.routers import pagos
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.routers import admin, auth, ordenes, pagos, productos
+from backend.app.core.config import settings
+from backend.app.routers import productos
 
 app = FastAPI(
     title="MEDISTOCK API",
