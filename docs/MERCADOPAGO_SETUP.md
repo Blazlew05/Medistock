@@ -36,7 +36,7 @@ Esta guía explica cómo obtener tus credenciales de prueba (sandbox) de Mercado
 
 ## Paso 4: Configurar en MEDISTOCK
 
-Edita `backend/.env`:
+Edita `backend_django/.env`:
 
 ```env
 MERCADOPAGO_ACCESS_TOKEN=TEST-1234567890123456-010101-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-12345678
@@ -47,7 +47,7 @@ Reinicia el backend:
 
 ```bash
 # Local
-uvicorn app.main:app --reload
+python manage.py runserver
 
 # En EC2
 sudo systemctl restart medistock-backend

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # MEDISTOCK - Setup script para EC2 Ubuntu 22.04 LTS
-# Ejecutar desde el directorio raiz del proyecto (donde estan backend/, frontend/, etc.)
+# Ejecutar desde el directorio raiz del proyecto (donde estan backend_django/, frontend_vite/, etc.)
 #
 # Uso:
 #   sudo bash deploy/setup.sh
@@ -60,8 +60,8 @@ GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;
 EOF
 
 # 4. Backend: virtualenv + deps
-echo "[5/8] Instalando backend (FastAPI)..."
-cd "$PROJECT_DIR/backend"
+echo "[5/8] Instalando backend (Django)..."
+cd "$PROJECT_DIR/backend_django"
 python3 -m venv venv
 ./venv/bin/pip install --upgrade pip -q
 ./venv/bin/pip install -r requirements.txt -q
@@ -71,17 +71,20 @@ if [ ! -f .env ]; then
   # Generar SECRET_KEY aleatoria
   SECRET=$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')
   sed -i "s|SECRET_KEY=.*|SECRET_KEY=$SECRET|" .env
-  echo "  Archivo .env creado. EDITA $PROJECT_DIR/backend/.env para configurar MercadoPago."
+  sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=$DB_PASS|" .env
+  echo "  Archivo .env creado. EDITA $PROJECT_DIR/backend_django/.env para configurar MercadoPago."
 fi
 
-# Seed inicial de la BD
-./venv/bin/python seed.py
+# Migraciones + seed inicial de la BD
+./venv/bin/python manage.py migrate
+./venv/bin/python manage.py seed_demo
+./venv/bin/python manage.py collectstatic --noinput
 
 # 5. Frontend principal
 echo "[6/8] Build del frontend principal..."
-cd "$PROJECT_DIR/frontend"
-if [ ! -f .env.local ]; then
-  echo "NEXT_PUBLIC_API_URL=http://$(curl -s ifconfig.me)" > .env.local
+cd "$PROJECT_DIR/frontend_vite"
+if [ ! -f .env ]; then
+  echo "VITE_API_URL=http://$(curl -s ifconfig.me)" > .env
 fi
 npm ci
 npm run build
@@ -128,7 +131,7 @@ echo ""
 echo "URLs publicas:"
 echo "  MEDISTOCK (principal):  http://$PUBLIC_IP"
 echo "  Cruz Amarilla (externo): http://$PUBLIC_IP/cruz-amarilla"
-echo "  API Docs (Swagger):      http://$PUBLIC_IP/api/docs"
+echo "  Django admin:            http://$PUBLIC_IP/admin"
 echo ""
 echo "Servicios:"
 echo "  sudo systemctl status medistock-backend"
@@ -138,5 +141,5 @@ echo ""
 echo "Logs:"
 echo "  sudo journalctl -u medistock-backend -f"
 echo ""
-echo "IMPORTANTE: Edita $PROJECT_DIR/backend/.env y agrega tus credenciales de MercadoPago."
+echo "IMPORTANTE: Edita $PROJECT_DIR/backend_django/.env y agrega tus credenciales de MercadoPago."
 echo "Luego: sudo systemctl restart medistock-backend"

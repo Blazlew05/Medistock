@@ -120,7 +120,7 @@ URLs publicas:
 Edita el `.env` del backend:
 
 ```bash
-nano /home/ubuntu/medistock/backend/.env
+nano /home/ubuntu/medistock/backend_django/.env
 ```
 
 Reemplaza:
@@ -221,7 +221,7 @@ sudo journalctl -u medistock-backend -n 50
 Revisa que `.env` esté bien configurado y que PostgreSQL esté arriba.
 
 ### Frontend muestra error de API
-- Verifica que `NEXT_PUBLIC_API_URL` en `frontend/.env.local` apunte a la IP pública.
+- Verifica que `VITE_API_URL` en `frontend_vite/.env` apunte a la IP pública.
 - Si lo cambias, hay que hacer `npm run build` y `systemctl restart medistock-frontend`.
 
 ### Webhook de MercadoPago no llega

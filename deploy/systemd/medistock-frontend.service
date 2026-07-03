@@ -1,15 +1,14 @@
 [Unit]
-Description=MEDISTOCK Frontend (Next.js)
+Description=MEDISTOCK Frontend (React + Vite)
 After=network.target
 
 [Service]
 Type=simple
 User=ubuntu
 Group=ubuntu
-WorkingDirectory={{PROJECT_DIR}}/frontend
+WorkingDirectory={{PROJECT_DIR}}/frontend_vite
 Environment=NODE_ENV=production
-Environment=PORT=3000
-ExecStart=/usr/bin/npm run start
+ExecStart=/usr/bin/npm run preview -- --host 0.0.0.0 --port 5173
 Restart=always
 RestartSec=5
 

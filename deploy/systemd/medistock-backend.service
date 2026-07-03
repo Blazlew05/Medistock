@@ -1,5 +1,5 @@
 [Unit]
-Description=MEDISTOCK Backend (FastAPI + Uvicorn)
+Description=MEDISTOCK Backend (Django + Gunicorn)
 After=network.target postgresql.service
 Requires=postgresql.service
 
@@ -7,9 +7,9 @@ Requires=postgresql.service
 Type=simple
 User=ubuntu
 Group=ubuntu
-WorkingDirectory={{PROJECT_DIR}}/backend
-EnvironmentFile={{PROJECT_DIR}}/backend/.env
-ExecStart={{PROJECT_DIR}}/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
+WorkingDirectory={{PROJECT_DIR}}/backend_django
+EnvironmentFile={{PROJECT_DIR}}/backend_django/.env
+ExecStart={{PROJECT_DIR}}/backend_django/venv/bin/gunicorn medistock_core.wsgi:application --bind 127.0.0.1:8000 --workers 2
 Restart=always
 RestartSec=5
 

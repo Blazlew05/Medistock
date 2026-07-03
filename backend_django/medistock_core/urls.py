@@ -1,23 +1,18 @@
-"""
-URL configuration for medistock_core project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+"""URL configuration for medistock_core project."""
 from django.contrib import admin
-from django.urls import path, include
+from django.http import JsonResponse
+from django.urls import include, path
+
+
+def health(request):
+    return JsonResponse({"status": "ok"})
+
 
 urlpatterns = [
-    path('admin/', admin.site.get_admin_site().urls if hasattr(admin.site, 'get_admin_site') else admin.site.urls),
-    path('api/', include('inventario.urls')), # Conecta tu app inventario bajo el prefijo /api/
+    path("admin/", admin.site.urls),
+    path("health", health, name="health"),
+    path("api/v1/auth/", include("usuarios.urls")),
+    path("api/v1/", include("productos.urls")),
+    path("api/v1/", include("ordenes.urls")),
+    path("api/v1/", include("pagos.urls")),
 ]
