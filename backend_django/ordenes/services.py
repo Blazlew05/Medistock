@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone
 
 from django.db import transaction
@@ -10,7 +11,10 @@ from .models import COSTO_ENVIO, EstadoOrden, ItemOrden, Orden
 
 
 def _generar_numero():
-    return f"OC-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    # Fecha a segundos + sufijo aleatorio para garantizar unicidad incluso
+    # cuando se crean varias órdenes dentro del mismo segundo.
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    return f"OC-{ts}{uuid.uuid4().hex[:4].upper()}"
 
 
 @transaction.atomic
